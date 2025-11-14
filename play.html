@@ -1,1 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Play Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #020617;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 10px 14px;
+      background: #020617;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title-group h1 {
+      font-size: 1rem;
+    }
+
+    .title-group p {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button, a.btn-link {
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.1s, border-color 0.1s, transform 0.05s;
+    }
+
+    button:hover, a.btn-link:hover {
+      background: #111827;
+      border-color: #3b82f6;
+      transform: translateY(-1px);
+    }
+
+    .btn-main {
+      background: #2563eb;
+      border-color: #1d4ed8;
+    }
+
+    .btn-main:hover {
+      background: #1d4ed8;
+    }
+
+    .game-wrapper {
+      flex: 1;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-frame-container {
+      flex: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1f2937;
+      background: black;
+      position: relative;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: black;
+    }
+
+    .status-bar {
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      border-top: 1px solid #1f2937;
+    }
+
+    .pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title-group">
+      <h1 id="gameTitle">Loading game…</h1>
+      <p id="gameSubtitle">Please wait while the game loads.</p>
+    </div>
+    <div class="btn-row">
+      <a href="index.html" class="btn-link">← Back to games</a>
+      <button class="btn-main" id="fullscreenBtn">Full screen</button>
+      <button id="openRawBtn">Open raw link</button>
+    </div>
+  </header>
+
+  <main class="game-wrapper">
+    <div class="game-frame-container" id="gameContainer">
+      <iframe id="gameFrame" src=""></iframe>
+    </div>
+    <div class="status-bar">
+      <span class="pill" id="statusText">Status: setting up…</span>
+      <span class="pill" id="categoryText">Category: —</span>
+    </div>
+  </main>
+
+  <script>
+    // === DEFINE YOUR GAMES HERE (same ids as on index) ===
+    const games = {
+      polytrack: {
+        name: "Poly Track",
+        category: "Racing",
+        url: "https://example.com/polytrack/index.html"
+      },
+      snake: {
+        name: "Retro Snake",
+        category: "Arcade",
+        url: "https://example.com/snake/index.html"
+      }
+      // add more:
+      // mygame: { name: "My Game", category: "Whatever", url: "https://..." }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const gameId = params.get("id");
+
+    const titleEl = document.getElementById("gameTitle");
+    const subtitleEl = document.getElementById("gameSubtitle");
+    const frameEl = document.getElementById("gameFrame");
+    const statusEl = document.getElementById("statusText");
+    const categoryEl = document.getElementById("categoryText");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const openRawBtn = document.getElementById("openRawBtn");
+    const gameContainer = document.getElementById("gameContainer");
+
+    if (!gameId || !games[gameId]) {
+      titleEl.textContent = "Game not found";
+      subtitleEl.textContent = "The game ID is missing or incorrect.";
+      statusEl.textContent = "Status: error";
+    } else {
+      const game = games[gameId];
+      titleEl.textContent = game.name;
+      subtitleEl.textContent = "If the screen stays blank, the game might be blocked by your network.";
+      categoryEl.textContent = "Category: " + game.category;
+      statusEl.textContent = "Status: loading…";
+
+      frameEl.src = game.url;
+
+      frameEl.addEventListener("load", () => {
+        statusEl.textContent = "Status: loaded";
+      });
+
+      // Open raw link in new tab if user wants
+      openRawBtn.addEventListener("click", () => {
+        window.open(game.url, "_blank");
+      });
+
+      // Fullscreen button
+      fullscreenBtn.addEventListener("click", () => {
+        if (gameContainer.requestFullscreen) {
+          gameContainer.requestFullscreen();
+        } else if (gameContainer.webkitRequestFullscreen) {
+          gameContainer.webkitRequestFullscreen();
+        } else if (gameContainer.msRequestFullscreen) {
+          gameContainer.msRequestFullscreen();
+        }
+      });
+    }
+  </script>
+</body>
+</html>
 
